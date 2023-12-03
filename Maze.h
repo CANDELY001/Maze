@@ -34,8 +34,8 @@
  */
 typedef struct point_s
 {
-    double x;
-    double y;
+	double x;
+	double y;
 } point_t;
 
 /* global variables */
@@ -62,9 +62,9 @@ bool quit(void);
 
 void raycaster(int *maze, bool textured);
 void renderWalls(int *maze, SDL_Point map, point_t rayPos, point_t rayDir,
-                 double distToWall, int x, int side, bool textured);
+		double distToWall, int x, int side, bool textured);
 void renderBGFlat(void);
 void renderBGTex(SDL_Point map, point_t rayDir, double distToWall,
-                 double wallX, int drawEnd, int x, int side);
+		double wallX, int drawEnd, int x, int side);
 
 #endif
