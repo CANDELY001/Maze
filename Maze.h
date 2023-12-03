@@ -2,8 +2,8 @@
 #define Maze_h
 
 /*Headers files*/
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2.h>
+#include <SDL2_image.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
