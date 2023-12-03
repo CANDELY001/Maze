@@ -11,81 +11,46 @@
  * @textured: True if user enabled textures, otherwise False
  * Return: oid
  */
-void renderWalls(int *maze, SDL_Point map, point_t rayPos, point_t rayDir, double distToWall, int x, int side, bool textured)
+void renderWalls(int *maze, SDL_Point map, point_t rayPos, point_t rayDir,
+		double distToWall, int x, int side, bool textured)
 {
-	int sliceHeight;
-	int drawStart;
-	int drawEnd;
-	int tileIndex;
+	int sliceH, drawStart, drawEnd, tileIndex, y;
 	double wallX;
 	SDL_Point tex;
 	uint32_t color;
-	int width;
-	int height;
-	int y;
 
-	if (!textured)
+	sliceH = (int)(textured ? SCREEN_HEIGHT : SDL_WINDOW_HEIGHT) / distToWall;
+	drawStart = -sliceH / 2 + (textured ? SCREEN_HEIGHT : SDL_WINDOW_HEIGHT) / 2;
+	drawStart = (drawStart < 0) ? 0 : drawStart;
+	drawEnd = sliceH / 2 + (textured ? SCREEN_HEIGHT : SDL_WINDOW_HEIGHT) / 2;
+	drawEnd = (drawEnd >= SCREEN_HEIGHT) ? SCREEN_HEIGHT - 1 : drawEnd;
+
+	wallX = (side == 0) ? rayPos.y + distToWall * rayDir.y
+		: rayPos.x + distToWall * rayDir.x;
+	wallX -= floor(wallX);
+
+	tileIndex = *((int *)maze + map.x * MAP_WIDTH + map.y) - 1;
+	tex.x = (int)(wallX * (double)TEX_WIDTH);
+	tex.x = (side == 0 && rayDir.x > 0) ? TEX_WIDTH - tex.x - 1 : tex.x;
+	tex.x = (side == 1 && rayDir.y < 0) ? TEX_WIDTH - tex.x - 1 : tex.x;
+
+	for (y = drawStart; y < drawEnd; y++)
 	{
-		SDL_GetWindowSize(window, &width, &height);
-
-		sliceHeight = (int)(height / distToWall);
-
-		drawStart = -sliceHeight / 2 + height / 2;
-		if (drawStart < 0)
-			drawStart = 0;
-		drawEnd = sliceHeight / 2 + height / 2;
-		if (drawEnd >= height)
-			drawEnd = height - 1;
-		if (side == 0)
-			SDL_SetRenderDrawColor(renderer, 0xF7, 0xF7, 0xF7, 0xFF);
-		else if (side == 1)
-			SDL_SetRenderDrawColor(renderer, 0xDE, 0xDE, 0xDE, 0xFF);
-		SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
+		tex.y = ((((y << 1) - SCREEN_HEIGHT + sliceH)
+					<< (int)log2(TEX_HEIGHT)) / sliceH) >> 1;
+		color = tiles[tileIndex][tex.x][tex.y];
+		color = (side == 1) ? ((color >> 1) & 8355711) : color;
+		buffer[y][x] = color;
 	}
-	else
-	{
-		sliceHeight = (int)(SCREEN_HEIGHT / distToWall);
 
-		drawStart = -sliceHeight / 2 + SCREEN_HEIGHT / 2;
-		if (drawStart < 0)
-			drawStart = 0;
-
-		drawEnd = sliceHeight / 2 + SCREEN_HEIGHT / 2;
-		if (drawEnd >= SCREEN_HEIGHT)
-			drawEnd = SCREEN_HEIGHT - 1;
-
-		wallX = 0;
-		if (side == 0)
-			wallX = rayPos.y + distToWall * rayDir.y;
-		else if (side == 1)
-			wallX = rayPos.x + distToWall * rayDir.x;
-
-		tileIndex = *((int *)maze + map.x * MAP_WIDTH + map.y) - 1;
-
-		wallX -= floor(wallX);
-
-		tex.x = (int)(wallX * (double)TEX_WIDTH);
-		if (side == 0 && rayDir.x > 0)
-			tex.x = TEX_WIDTH - tex.x - 1;
-		if (side == 1 && rayDir.y < 0)
-			tex.x = TEX_WIDTH - tex.x - 1;
-
-		for (y = drawStart; y < drawEnd; y++)
-		{
-			tex.y = ((((y << 1) - SCREEN_HEIGHT + sliceHeight) <<
-						(int)log2(TEX_HEIGHT)) / sliceHeight) >> 1;
-
-			color = tiles[tileIndex][tex.x][tex.y];
-
-			if (side == 1)
-				color = (color >> 1) & 8355711;
-
-			buffer[y][x] = color;
-		}
+	if (textured)
 		renderBGTex(map, rayDir, distToWall, wallX, drawEnd, x, side);
-	}
-}
+	else
+		SDL_SetRenderDrawColor(renderer, (side == 0) ? 0xF7
+				: 0xDE, (side == 0) ? 0xF7 : 0xDE, (side == 0) ? 0xF7 : 0xDE, 0xFF);
 
+	SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
+}
 /**
  * renderBGTex - draws floor and ceiling with textures
  * @map: X/Y coordinates of box of maze currently in
@@ -97,7 +62,8 @@ void renderWalls(int *maze, SDL_Point map, point_t rayPos, point_t rayDir, doubl
  * @side: determines whether wall is N/S or E/W
  * Return: void
  */
-void renderBGTex(SDL_Point map, point_t rayDir, double distToWall, double wallX, int drawEnd, int x, int side)
+void renderBGTex(SDL_Point map, point_t rayDir,
+		double distToWall, double wallX, int drawEnd, int x, int side)
 {
 	point_t floorWall;
 	point_t currentFloor;
@@ -107,41 +73,24 @@ void renderBGTex(SDL_Point map, point_t rayDir, double distToWall, double wallX,
 	int y;
 
 	if (side == 0 && rayDir.x > 0)
-	{
-		floorWall.x = map.x;
-		floorWall.y = map.y + wallX;
-	}
+		floorWall.x = map.x, floorWall.y = map.y + wallX;
 	else if (side == 0 && rayDir.x < 0)
-	{
-		floorWall.x = map.x + 1.0;
-		floorWall.y = map.y + wallX;
-	}
+		floorWall.x = map.x + 1.0, floorWall.y = map.y + wallX;
 	else if (side == 1 && rayDir.y > 0)
-	{
-		floorWall.x = map.x + wallX;
-		floorWall.y = map.y;
-	}
+		floorWall.x = map.x + wallX, floorWall.y = map.y;
 	else
-	{
-		floorWall.x = map.x + wallX;
-		floorWall.y = map.y + 1.0;
-	}
+		floorWall.x = map.x + wallX, floorWall.y = map.y + 1.0;
 	if (drawEnd < 0)
 		drawEnd = SCREEN_HEIGHT;
 	for (y = drawEnd + 1; y < SCREEN_HEIGHT; y++)
 	{
 		currentDist = SCREEN_HEIGHT / (2.0 * y - SCREEN_HEIGHT);
-
 		weight = currentDist / distToWall;
-
 		currentFloor.x = weight * floorWall.x + (1.0 - weight) * pos.x;
 		currentFloor.y = weight * floorWall.y + (1.0 - weight) * pos.y;
-
 		floorTex.x = (int)(currentFloor.x * TEX_WIDTH) % TEX_WIDTH;
 		floorTex.y = (int)(currentFloor.y * TEX_HEIGHT) % TEX_HEIGHT;
-
 		buffer[y][x] = tiles[5][floorTex.y][floorTex.x];
-
 		buffer[SCREEN_HEIGHT - y][x] = tiles[4][floorTex.y][floorTex.x];
 	}
 }
