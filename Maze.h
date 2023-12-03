@@ -18,6 +18,7 @@
 /* macros */
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 800
+#define SDL_WINDOW_HEIGHT 800
 #define TEX_COUNT 6
 #define TEX_WIDTH 64
 #define TEX_HEIGHT 64

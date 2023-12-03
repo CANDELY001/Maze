@@ -1,9 +1,9 @@
 #include "Maze.h"
 
 /* Function prototypes*/
-void updatePosition1(int *maze, double moveSpeed);
-void updatePosition2(int *maze, double moveSpeed);
-void rotateDirection(double rotateSpeed, uint8_t *keystate);
+void updatePosition1(int *maze, double moveSpeed, const uint8_t *keystate);
+void updatePosition2(int *maze, double moveSpeed, const uint8_t *keystate);
+void rotateDirection(double rotateSpeed, const uint8_t *keystate);
 /**
  * input - checks user input for movement
  * @maze: 2D array defining maze map
@@ -12,7 +12,7 @@ void rotateDirection(double rotateSpeed, uint8_t *keystate);
 void input(int *maze)
 {
 	const uint8_t *keystate;
-	double oldTime, frameTime, oldPlaneX;
+	double oldTime, frameTime;
 	double moveSpeed, rotateSpeed;
 
 	keystate = SDL_GetKeyboardState(NULL);
@@ -21,7 +21,7 @@ void input(int *maze)
 	moveSpeed = frameTime * 5.0;
 	rotateSpeed = frameTime * 3.0;
 
-	updatePosition1(maze, moveSpeed);
+	updatePosition1(maze, moveSpeed, keystate);
 	rotateDirection(rotateSpeed, keystate);
 }
 /**
@@ -30,7 +30,7 @@ void input(int *maze)
  * @keystate: variabe parameter
  * Return: void
  */
-void rotateDirection(double rotateSpeed, uint8_t *keystate)
+void rotateDirection(double rotateSpeed, const uint8_t *keystate)
 {
 	double oldDirX, oldPlaneX;
 
@@ -57,9 +57,10 @@ void rotateDirection(double rotateSpeed, uint8_t *keystate)
  * updatePosition1 - updates player position based on user input
  * @maze: 2D array defining maze map
  * @moveSpeed: speed of movement
+ * @keystate: variabe parameter
  * Return: void
  */
-void updatePosition1(int *maze, double moveSpeed)
+void updatePosition1(int *maze, double moveSpeed, const uint8_t *keystate)
 {
 	if (keystate[SDL_SCANCODE_UP])
 	{
@@ -88,9 +89,10 @@ void updatePosition1(int *maze, double moveSpeed)
  * updatePosition2 - updates player position based on user input
  * @maze: 2D array defining maze map
  * @moveSpeed: speed of movement
+ * @keystate: variabe parameter
  * Return: void
  */
-void updatePosition2(int *maze, double moveSpeed)
+void updatePosition2(int *maze, double moveSpeed, const uint8_t *keystate)
 {
 	if (keystate[SDL_SCANCODE_LEFT])
 	{
