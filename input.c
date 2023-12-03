@@ -82,7 +82,7 @@ void updatePosition1(int *maze, double moveSpeed, const uint8_t *keystate)
 	}
 	else
 	{
-		updatePosition2(maze, moveSpeed);
+		updatePosition2(maze, moveSpeed, keystate);
 	}
 }
 /**
