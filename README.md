@@ -109,8 +109,7 @@ where `MAP` is the name of the file found in the maps folder. You can create oth
 `N` - Turn on map visibility. The 2D map will be visible again if it wasn't
 
 ## Preview
-
-./images/Screenshot 2023-12-13 at 7.51.32 PM.png
+![image](https://github.com/CANDELY001/Maze/assets/125865959/26f44150-baca-43f3-9fbd-be5ec87f2f81)
 
 ## Authors
 
