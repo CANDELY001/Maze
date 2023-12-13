@@ -1,6 +1,7 @@
 # Maze project
 
 ## Background Context
+
 ![maze gif](https://user-images.githubusercontent.com/88714347/171422634-8adc8811-2559-4ba1-967f-4caf909c3f22.gif)
 
 The goal of this project is to create a game in 3D using raycasting!
@@ -109,6 +110,7 @@ where `MAP` is the name of the file found in the maps folder. You can create oth
 
 ## Preview
 
+./images/Screenshot 2023-12-13 at 7.51.32 PM.png
 
 ## Authors
 
